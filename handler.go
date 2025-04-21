@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"log"
@@ -49,15 +49,4 @@ func setupRouter() *gin.Engine {
 	routes.SetupRoutes(router)
 
 	return router
-}
-
-func main() {
-	// For local development
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-	log.Printf("Starting server on port %s", port)
-	http.HandleFunc("/", Handler)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
