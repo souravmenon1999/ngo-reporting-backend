@@ -13,7 +13,13 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func main() {
+// Handler is the exported function for Vercel serverless
+func Handler(w http.ResponseWriter, r *http.Request) {
+	router := setupRouter()
+	router.ServeHTTP(w, r)
+}
+
+func setupRouter() *gin.Engine {
 	// Load environment variables
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found")
@@ -42,13 +48,16 @@ func main() {
 	// Initialize routes
 	routes.SetupRoutes(router)
 
-	// Start server
+	return router
+}
+
+func main() {
+	// For local development
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		router.ServeHTTP(w, r)
-	})
+	log.Printf("Starting server on port %s", port)
+	http.HandleFunc("/", Handler)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
