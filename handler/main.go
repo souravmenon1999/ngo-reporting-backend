@@ -3,7 +3,6 @@ package handler
 import (
 	"log"
 	"net/http"
-	"os"
 
 	"ngo-reporting-backend/config"
 	"ngo-reporting-backend/routes"
@@ -13,40 +12,37 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// Handler is the exported function for Vercel serverless
 func Handler(w http.ResponseWriter, r *http.Request) {
 	router := setupRouter()
 	router.ServeHTTP(w, r)
 }
 
 func setupRouter() *gin.Engine {
-	// Load environment variables
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found")
 	}
 
-	// Initialize MongoDB
 	if err := config.InitDB(); err != nil {
 		log.Fatal("Failed to connect to MongoDB: ", err)
 	}
 
-	// Set up Gin router
 	router := gin.Default()
 
-	// Add CORS middleware
-	frontendURL := os.Getenv("FRONTEND_URL")
-	if frontendURL == "" {
-		frontendURL = "http://localhost:5173"
-	}
+	// Log requests for debugging
+	router.Use(func(c *gin.Context) {
+		log.Printf("Request: %s %s, Origin: %s", c.Request.Method, c.Request.URL, c.Request.Header.Get("Origin"))
+		c.Next()
+	})
+
+	// CORS middleware
 	configCors := cors.DefaultConfig()
-	configCors.AllowOrigins = []string{frontendURL}
+	configCors.AllowAllOrigins = true // Allow all origins in production
 	configCors.AllowMethods = []string{"GET", "POST", "OPTIONS"}
-	configCors.AllowHeaders = []string{"Origin", "Content-Type"}
-	configCors.AllowCredentials = true
+	configCors.AllowHeaders = []string{"Origin", "Content-Type", "Accept"}
+	configCors.ExposeHeaders = []string{"Content-Length"}
+	// Note: AllowCredentials is omitted as it conflicts with AllowAllOrigins
 	router.Use(cors.New(configCors))
 
-	// Initialize routes
 	routes.SetupRoutes(router)
-
 	return router
 }
