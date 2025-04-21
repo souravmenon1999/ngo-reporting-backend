@@ -6,12 +6,10 @@ require (
 	github.com/gin-contrib/cors v1.7.5
 	github.com/gin-gonic/gin v1.10.0
 	github.com/joho/godotenv v1.5.1
-	github.com/vercel/go-bridge v0.0.0-20221108222652-296f4c6bdb6d
 	go.mongodb.org/mongo-driver v1.12.0
 )
 
 require (
-	github.com/aws/aws-lambda-go v1.48.0 // indirect
 	github.com/bytedance/sonic v1.13.2 // indirect
 	github.com/bytedance/sonic/loader v0.2.4 // indirect
 	github.com/cloudwego/base64x v0.1.5 // indirect
