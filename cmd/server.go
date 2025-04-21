@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"log"
@@ -42,13 +42,4 @@ func CreateGinHandler() *gin.Engine {
 	routes.SetupRoutes(router)
 
 	return router
-}
-
-func main() {
-	router := CreateGinHandler()
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-	log.Fatal(router.Run(":" + port))
 }
